@@ -26,7 +26,7 @@ public class App {
      * {@link loader.Loader#readFileAsString(String)} is the interface {@link loader.Loader} default method<br>
      * Use the argument as the file if passed in.<br>
      * <br>
-     *     <b>Operations:</b><br>
+     * <b>Operations:</b><br>
      * Set filename from arguments if they are passed, or use the default location from exercise zip file.
      * Create a {@link DataLoader} object.<br>
      * Loads three {@link ExchangeRate} objects per requirements. {@link DataLoader#addExchangeRate(String, ExchangeRate)}<br>
@@ -49,11 +49,15 @@ public class App {
 
         System.out.println("HashMap...");
         Map<String, Data> map = loader.load(new HashMap<>(), loader.readFileAsString(file));
+        System.out.println("Country     \tCredit Rating\tAverage");
+        System.out.println("_________________________________________________________");
         map.forEach((s, data) -> System.out.println(data));
 
         System.out.println("\n");
 
-        System.out.println("TreeMap...");
+        System.out.println("TreeMap..");
+        System.out.println("Country     \tCredit Rating\tAverage");
+        System.out.println("_________________________________________________________");
         map = loader.load(new TreeMap<>(), loader.readFileAsString(file));
         map.forEach((s, data) -> System.out.println(data));
     }

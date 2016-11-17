@@ -27,6 +27,7 @@ public abstract class AbstractData implements Comparable {
 
     /**
      * Need to return currency to loader for conversions
+     *
      * @return currency
      */
     abstract String getCurrency();

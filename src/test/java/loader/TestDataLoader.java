@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNull;
  */
 public class TestDataLoader {
     private final List<String> arrayList = new ArrayList<>();
+
     @Before
     public void setList() {
         arrayList.add("Company Code\tAccount\tCity\tCountry\tCredit Rating\tCurrency\tAmount");

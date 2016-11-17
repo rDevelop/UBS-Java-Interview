@@ -12,18 +12,18 @@ import static org.junit.Assert.assertNull;
  */
 public class TestData {
     private Data data;
+
     @Before
-    public void setData()
-    {
+    public void setData() {
         data = new Data();
     }
 
     @Test
-    public void insertDataWithCountryRatingKey(){
+    public void insertDataWithCountryRatingKey() {
         data = new Data();
         String line = "2316\t1520670\tArhus\tDK\tNR\tUSD\t100";
         data.insertDataLine(line);
-        assert(data.getKey().equals("DKNR"));
+        assert (data.getKey().equals("DKNR"));
     }
 
 
@@ -42,13 +42,13 @@ public class TestData {
     }
 
     @Test
-    public void nullCountry(){
+    public void nullCountry() {
         data = new Data();
         String line = "2316\t1520670\tArhus\t\tNR\tUSD\t100";
         data.insertDataLine(line);
         System.out.println(data.getCountry());
         System.out.println(data.getCity());
-        assert(data.getCountry().equals(data.getCity()));
+        assert (data.getCountry().equals(data.getCity()));
     }
 
     @Test

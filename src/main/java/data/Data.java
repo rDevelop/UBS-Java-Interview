@@ -7,6 +7,8 @@ import marketdata.ExchangeRate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import static java.lang.String.format;
+
 /**
  * This class objectifies the data lines and performs the euro conversion and average.<br>
  * It overwrites the toString method so that nothing has to reformat it.<br>
@@ -27,6 +29,7 @@ public class Data extends AbstractData {
 
     /**
      * Return currency for conversions
+     *
      * @return currency
      */
     @Override
@@ -36,23 +39,25 @@ public class Data extends AbstractData {
 
     /**
      * Key for grouping will be country + credit rating
+     *
      * @return key
      */
     @Override
     public String getKey() {
-        return country+creditRating;
+        return country + creditRating;
     }
 
     /**
      * This method populates the Data class. <br>
      * It splits the dataLine on tabs and then uses the enum Column to attribute the fields.<br>
      * If country is null, it uses the city as country.
+     *
      * @param dataLine String of tab delimited data
      */
     @Override
     public void insertDataLine(String dataLine) {
         String[] fields = dataLine.split("\t");
-        if( fields.length == 0 ){
+        if (fields.length == 0) {
             return;
         }
         for (Enum col : Columns.values()) {
@@ -75,13 +80,14 @@ public class Data extends AbstractData {
 
             }
         }
-        if(country.equals("")) {
+        if (country.equals("")) {
             country = city;
         }
     }
 
     /**
      * Averages the amount bases on number of times and amount is averaged with a new amount.
+     *
      * @param amount amount of single line that will be added to average
      */
     @Override
@@ -97,7 +103,8 @@ public class Data extends AbstractData {
     }
 
     /**
-     * This method takes an amount and sets the amounts. Meant to set seperately from averages and not count against count.
+     * This method takes an amount and sets the amounts. Meant to set separately from averages and not count against count.
+     *
      * @param amount the amount to set after currency conversions
      */
     public void setAmounts(BigDecimal amount) {
@@ -107,13 +114,14 @@ public class Data extends AbstractData {
 
     /**
      * Triangulation means the currencies use a middle currency to convert from one to middle, then middle to second.
-     * @param rate1 currency rate 1
-     * @param rate2 currency rate 2
+     *
+     * @param rate1  currency rate 1
+     * @param rate2  currency rate 2
      * @param amount amount to be converted
      * @return amount of conversion of rate 1 to second currency, then rate 2 to 1st currency. Completing the triangle.
      */
-    public BigDecimal triangulateCurrency (ExchangeRate rate1, ExchangeRate rate2, BigDecimal amount) {
-        if( rate1 == null || rate2 == null ) {
+    public BigDecimal triangulateCurrency(ExchangeRate rate1, ExchangeRate rate2, BigDecimal amount) {
+        if (rate1 == null || rate2 == null) {
             return null;
         }
         return rate2.toCurr1(rate1.toCurr2(amount));
@@ -121,11 +129,11 @@ public class Data extends AbstractData {
 
     /**
      * Override the toString to produce an easy printer
+     *
      * @return the string formatted simply to country credit rating and average
      */
-    @Override
     public String toString() {
-        return country + " " + creditRating + " " + average;
+        return format("%1$-12s", country) + "\t" + format("%1$-12s", creditRating) + "\t" + average;
     }
 
 }

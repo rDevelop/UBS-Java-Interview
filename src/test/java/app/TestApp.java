@@ -14,7 +14,7 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Test class to test main mathod from {@link App}<br>
+ * Test class to test main method from {@link App}<br>
  * <b>Untested</b>Set filename from arguments if they are passed, or use the default location from exercise zip file.
  * Create a {@link DataLoader} object.<br>
  * Loads three {@link ExchangeRate} objects per requirements. {@link DataLoader#addExchangeRate(String, ExchangeRate)}<br>
@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNull;
  */
 public class TestApp {
     private final String file = "src/test/resources/FILE.DAT";
+
     @Test
     public void addDataLoader() {
         new DataLoader();
@@ -46,7 +47,6 @@ public class TestApp {
         System.out.println("HashMap...");
         Map<String, Data> map = loader.load(new HashMap<>(), loader.readFileAsString(file));
         assertNotNull(map);
-        if(map == null ) { throw new AssertionError("map is null");}
         map.forEach((s, data) -> System.out.println(data));
     }
 
@@ -60,7 +60,6 @@ public class TestApp {
         System.out.println("TreeMap...");
         Map<String, Data> map = loader.load(new TreeMap<>(), loader.readFileAsString(file));
         assertNotNull(map);
-        if(map == null ) { throw new AssertionError("map is null");}
         map.forEach((s, data) -> System.out.println(data));
     }
 

@@ -18,9 +18,10 @@ public class DataLoader implements Loader {
 
     /**
      * This generic load method uses and Type {@link Map} to maintain the data.
-     * @param map The Type of Map used to contain the List of Strings
+     *
+     * @param map   The Type of Map used to contain the List of Strings
      * @param lines The List of Strings
-     * @param <T> Any Type Map
+     * @param <T>   Any Type Map
      * @return The map that was created from data lines, or null if List parameter is null.
      */
     @Override
@@ -42,7 +43,7 @@ public class DataLoader implements Loader {
      * If this is the header line, then continue to next line.<br>
      * Create a data object.<br>
      * Insert the line into the data object.<br>
-     * Get the current amount of the line(s) (This will be overriden if valid currency is passed<br>
+     * Get the current amount of the line(s) (This will be Overridden if valid currency is passed<br>
      * Switch on the currency and check for CHF and GBP<br>
      * Convert the amount based on currency<br>
      * Set the converted amount.<br>
@@ -52,12 +53,13 @@ public class DataLoader implements Loader {
      * Set the existing object with new average and amounts to the original Data object<br>
      * Add the Data object to the map<br>
      * Return the map when all lines are iterated through.
-     * @param map Map that will hold the List of Strings
+     *
+     * @param map   Map that will hold the List of Strings
      * @param lines Data lines from file
      * @return The populated map or null
      */
     private Map<String, Data> createMap(Map<String, Data> map, List<String> lines) {
-        if(lines == null || !lines.get(0).contains("Company Code")) {
+        if (lines == null || !lines.get(0).contains("Company Code")) {
             return null;
         }
         for (String line : lines) {
@@ -91,7 +93,8 @@ public class DataLoader implements Loader {
 
     /**
      * Method to add Exchange rates to the instance field {@link DataLoader#rates}
-     * @param curr String representation of Currency. This is the hash key
+     *
+     * @param curr         String representation of Currency. This is the hash key
      * @param exchangeRate exchange rate that attaches to the key
      */
     public void addExchangeRate(String curr, ExchangeRate exchangeRate) {
