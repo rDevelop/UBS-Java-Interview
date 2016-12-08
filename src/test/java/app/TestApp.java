@@ -5,13 +5,12 @@ import loader.DataLoader;
 import marketdata.ExchangeRate;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class to test main method from {@link App}<br>
@@ -22,55 +21,56 @@ import static org.junit.Assert.assertNull;
  * Print the map using the overridden {@link Data#toString()} method.
  */
 public class TestApp {
-    private final String file = "src/test/resources/FILE.DAT";
-
+    /**
+     * Run the application
+     */
     @Test
-    public void addDataLoader() {
-        new DataLoader();
+    public void appMain() {
+        App.main(new String[]{});
     }
 
+    /**
+     * Create an exchangeRate and ensure the string output matches expected output
+     */
     @Test
-    public void addExchanges() {
-        DataLoader loader = new DataLoader();
-        loader.addExchangeRate("GBP", new ExchangeRate("GBP", "USD", BigDecimal.valueOf(1.654)));
-        loader.addExchangeRate("EUR", new ExchangeRate("EUR", "USD", BigDecimal.valueOf(1.35)));
-        loader.addExchangeRate("CHF", new ExchangeRate("CHF", "USD", BigDecimal.valueOf(1.10)));
-
+    public void createValidExchangeRate() {
+        ExchangeRate exchangeRate = new ExchangeRate("GBP", "USD", 1.65);
+        assertTrue("GBP/USD : 1.65".equals(exchangeRate.toString()));
     }
 
+    /**
+     * Use a new data loader object with good rates to create a hash map
+     */
     @Test
     public void loadWithHashMap() {
         DataLoader loader = new DataLoader();
-        loader.addExchangeRate("GBP", new ExchangeRate("GBP", "USD", BigDecimal.valueOf(1.654)));
-        loader.addExchangeRate("EUR", new ExchangeRate("EUR", "USD", BigDecimal.valueOf(1.35)));
-        loader.addExchangeRate("CHF", new ExchangeRate("CHF", "USD", BigDecimal.valueOf(1.10)));
-        System.out.println("HashMap...");
-        Map<String, Data> map = loader.load(new HashMap<>(), loader.readFileAsString(file));
+        loader.addExchangeRate("GBP/USD", new ExchangeRate("GBP", "USD", 1.245));
+        loader.addExchangeRate("CHF/USD", new ExchangeRate("CHF", "USD", .99));
+        loader.addExchangeRate("EUR/USD", new ExchangeRate("EUR", "USD", 1.1));
+        Map<String, Data> map = loader.load(new HashMap<>(), loader.readFileAsString("src/test/resources/FILE.DAT"));
         assertNotNull(map);
-        map.forEach((s, data) -> System.out.println(data));
     }
 
-
+    /**
+     * Use a new data loader object with good rates to create a tree map
+     */
     @Test
     public void loadWithTreeMap() {
         DataLoader loader = new DataLoader();
-        loader.addExchangeRate("GBP", new ExchangeRate("GBP", "USD", BigDecimal.valueOf(1.654)));
-        loader.addExchangeRate("EUR", new ExchangeRate("EUR", "USD", BigDecimal.valueOf(1.35)));
-        loader.addExchangeRate("CHF", new ExchangeRate("CHF", "USD", BigDecimal.valueOf(1.10)));
-        System.out.println("TreeMap...");
-        Map<String, Data> map = loader.load(new TreeMap<>(), loader.readFileAsString(file));
+        loader.addExchangeRate("GBP/USD", new ExchangeRate("GBP", "USD", 1.245));
+        loader.addExchangeRate("CHF/USD", new ExchangeRate("CHF", "USD", .99));
+        loader.addExchangeRate("EUR/USD", new ExchangeRate("EUR", "USD", 1.1));
+        Map<String, Data> map = loader.load(new TreeMap<>(), loader.readFileAsString("src/test/resources/FILE.DAT"));
         assertNotNull(map);
-        map.forEach((s, data) -> System.out.println(data));
     }
 
+    /**
+     * Loading a bogus file, should properly return null.
+     */
     @Test
     public void loadBadFile() {
         DataLoader loader = new DataLoader();
-        loader.addExchangeRate("GBP", new ExchangeRate("GBP", "USD", BigDecimal.valueOf(1.654)));
-        loader.addExchangeRate("EUR", new ExchangeRate("EUR", "USD", BigDecimal.valueOf(1.35)));
-        loader.addExchangeRate("CHF", new ExchangeRate("CHF", "USD", BigDecimal.valueOf(1.10)));
-        System.out.println("TreeMap...");
         Map<String, Data> map = loader.load(new TreeMap<>(), loader.readFileAsString("src/test/java/app/TestApp.java"));
-        assertNull(map);
+        assertTrue(map.isEmpty());
     }
 }

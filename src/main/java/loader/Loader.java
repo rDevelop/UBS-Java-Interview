@@ -6,12 +6,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Loader interface
  */
+@FunctionalInterface
 public interface Loader {
     /**
      * The load method will allow any <tt>Type</tt> Map contain the List of Strings read from the file<br>
@@ -34,14 +38,15 @@ public interface Loader {
     default List<String> readFileAsString(String file) {
         Path path = Paths.get(file);
         if (!Files.exists(path)) {
-            System.out.println("Can't open file. app.App exiting.");
+            Logger.getLogger(Loader.class.getName()).log(Level.SEVERE, "Path to file doesn't exist: " + path);
+            System.exit(1);
         }
         try {
             return Files.readAllLines(path);
         } catch (IOException e) {
-            System.out.println("Error " + e.toString());
-            e.printStackTrace();
+            Logger.getLogger(Loader.class.getName()).log(Level.SEVERE, "Reading file error", e);
+            System.exit(1);
         }
-        return null;
+        return Collections.emptyList();
     }
 }

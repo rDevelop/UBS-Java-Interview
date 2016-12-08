@@ -2,10 +2,11 @@ package data;
 
 
 import data.columns.Columns;
-import marketdata.ExchangeRate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.lang.String.format;
 
@@ -18,6 +19,8 @@ import static java.lang.String.format;
  * <tt>average</tt> is the average amount
  */
 public class Data extends AbstractData {
+    private static final Logger logger = Logger.getLogger(Data.class.getName());
+
     /**
      * Constructor that takes no arguments and sets the amount counter and amounts to zero.
      */
@@ -61,11 +64,11 @@ public class Data extends AbstractData {
             return;
         }
         for (Enum col : Columns.values()) {
-            if (col.name().equals("AMOUNT")) {
+            if ("AMOUNT".equals(col.name())) {
                 try {
                     amount = new BigDecimal(fields[Columns.AMOUNT.ordinal()]);
                 } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING, "Amount is set to zero, after this exception", e);
                     amount = new BigDecimal(0);
                 }
                 average = amount;
@@ -80,7 +83,7 @@ public class Data extends AbstractData {
 
             }
         }
-        if (country.equals("")) {
+        if ("".equals(country)) {
             country = city;
         }
     }
@@ -98,7 +101,7 @@ public class Data extends AbstractData {
             this.average = this.amount.divide(BigDecimal.valueOf(count), 2, RoundingMode.CEILING);
         } catch (Exception e) {
             this.average = this.amount;
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Amount is unchanged after this exception", e);
         }
     }
 
@@ -113,25 +116,11 @@ public class Data extends AbstractData {
     }
 
     /**
-     * Triangulation means the currencies use a middle currency to convert from one to middle, then middle to second.
-     *
-     * @param rate1  currency rate 1
-     * @param rate2  currency rate 2
-     * @param amount amount to be converted
-     * @return amount of conversion of rate 1 to second currency, then rate 2 to 1st currency. Completing the triangle.
-     */
-    public BigDecimal triangulateCurrency(ExchangeRate rate1, ExchangeRate rate2, BigDecimal amount) {
-        if (rate1 == null || rate2 == null) {
-            return null;
-        }
-        return rate2.toCurr1(rate1.toCurr2(amount));
-    }
-
-    /**
      * Override the toString to produce an easy printer
      *
      * @return the string formatted simply to country credit rating and average
      */
+    @Override
     public String toString() {
         return format("%1$-12s", country) + "\t" + format("%1$-12s", creditRating) + "\t" + average;
     }

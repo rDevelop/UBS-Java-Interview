@@ -2,18 +2,23 @@ package loader;
 
 import data.Data;
 import marketdata.ExchangeRate;
+import marketdata.ExchangeRateException;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Implementing Loader to create Map of {@link Data} objects.<br>
  * The default method in Interface {@link Loader#readFileAsString(String)} is hidden from implementation.<br>
  */
 public class DataLoader implements Loader {
-
+    private static final Logger logger = Logger.getLogger(DataLoader.class.getName());
     private final HashMap<String, ExchangeRate> rates = new HashMap<>();
 
     /**
@@ -30,8 +35,7 @@ public class DataLoader implements Loader {
         if (lines == null) {
             return null;
         }
-        map = createMap(map, lines);
-        return (T) map;
+        return (T) createMap(map, lines);
     }
 
 
@@ -59,10 +63,16 @@ public class DataLoader implements Loader {
      * @return The populated map or null
      */
     private Map<String, Data> createMap(Map<String, Data> map, List<String> lines) {
-        if (lines == null || !lines.get(0).contains("Company Code")) {
-            return null;
+        // stream the list strings and find all non-empty rows that have 7 elements after splitting tabs
+        // This should find most bogus lines in the files, but there could always be worse out there.
+        List<String> filteredList = lines.stream()
+                .filter(l -> !l.isEmpty())
+                .filter(l -> l.split("\t").length == 7)
+                .collect(Collectors.toList());
+        if (filteredList.isEmpty() || !filteredList.get(0).contains("Company Code")) {
+            return Collections.emptyMap();
         }
-        for (String line : lines) {
+        for (String line : filteredList) {
             if (line.contains("Company Code")) {
                 continue;
             }
@@ -70,11 +80,11 @@ public class DataLoader implements Loader {
             d.insertDataLine(line);
             BigDecimal bd = d.getAmount();
             switch (d.getCurrency()) {
+                // check the currency
                 case "CHF":
-                    bd = d.triangulateCurrency(rates.get("CHF"), rates.get("EUR"), d.getAmount());
-                    break;
                 case "GBP":
-                    bd = d.triangulateCurrency(rates.get("GBP"), rates.get("EUR"), d.getAmount());
+                    // if currency is CHF, or GBP, convert amount to EUR
+                    bd = euroConversion(bd, d.getCurrency());
                     break;
                 default:
                     break;
@@ -94,13 +104,36 @@ public class DataLoader implements Loader {
     /**
      * Method to add Exchange rates to the instance field {@link DataLoader#rates}
      *
-     * @param curr         String representation of Currency. This is the hash key
+     * @param identifier         String representation of Currency. This is the hash key
      * @param exchangeRate exchange rate that attaches to the key
      */
-    public void addExchangeRate(String curr, ExchangeRate exchangeRate) {
-        rates.put(curr, exchangeRate);
+    public void addExchangeRate(String identifier, ExchangeRate exchangeRate) {
+        rates.put(identifier, exchangeRate);
     }
 
+    /**
+     * Convert amount to amount * rate conversion
+     *
+     * @param amount
+     * @param currency
+     * @return BigDecimal newAmount
+     */
+    public BigDecimal euroConversion(BigDecimal amount, String currency) {
+        BigDecimal convertedAmount = amount;
+        try {
+            // multiply the BigDecimal amount by the converted exchange rate.
+            convertedAmount = amount.multiply(
+                    BigDecimal.valueOf(
+                            // use the currency of this line to find the /USD to EUR/USD rate.
+                            ExchangeRate.getExchangeRate(
+                                    rates.get(currency + "/USD"), rates.get("EUR/USD"))));
+
+        } catch (ExchangeRateException e) {
+            logger.log(Level.WARNING, "Amount is unchanged after this exception", e);
+
+        }
+        return convertedAmount;
+    }
 }
 
 

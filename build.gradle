@@ -1,0 +1,38 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+
+group = 'ubs'
+version = '1.0.0'
+
+jar {
+    baseName = 'ubs-java-interview'
+    version = version
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'com.github.stefanbirkner', name: 'system-rules', version: '1.2.0'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = 3.2
+}
+
+task printProperties {
+    doLast {
+        println version
+    }
+}

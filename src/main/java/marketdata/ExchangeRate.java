@@ -1,8 +1,5 @@
 package marketdata;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 /**
  * This class is designed to hold currency pairs. The design only allows the constructor to create a new object.<br>
  * Once the object is instantiated the toCurr1 and toCurr2 methods can be called.<br>
@@ -13,8 +10,7 @@ import java.math.RoundingMode;
 public class ExchangeRate {
     private final String curr1;
     private final String curr2;
-    private final BigDecimal rate1;
-    private final BigDecimal rate2;
+    private final Double rate;
 
 
     /**
@@ -25,30 +21,52 @@ public class ExchangeRate {
      * @param curr2 Currency 2
      * @param rate  Rate to convert from Currency 1 to Currency 2
      */
-    public ExchangeRate(String curr1, String curr2, BigDecimal rate) {
+    public ExchangeRate(String curr1, String curr2, Double rate) {
         this.curr1 = curr1;
         this.curr2 = curr2;
-        this.rate1 = rate;
-        this.rate2 = BigDecimal.valueOf(1 / rate1.doubleValue()).setScale(3, RoundingMode.CEILING);
+        this.rate = rate;
     }
 
-    public BigDecimal toCurr1(BigDecimal curr2value) {
-        return curr2value.multiply(rate2).setScale(3, RoundingMode.CEILING);
+    /**
+     * getExchangeRate requires 2 not-null rates. Both rates 2nd currency must match, and Rate 2 can't be zero.
+     *
+     * @param from ExchangeRate
+     * @param to   ExchangeRate
+     * @return Double - converted exchangeRate value
+     * @throws ExchangeRateException
+     */
+    public static double getExchangeRate(ExchangeRate from, ExchangeRate to) throws ExchangeRateException {
+        if (to == null || from == null) {
+            throw new NullExchangeRateException("Null rate(s) can't convert. From Rate:" + from + ", To Rate:" + to);
+        } else if (!from.getCurr2().equals(to.getCurr2())) {
+            throw new InvalidExchangeRateException(
+                    "Rate second currency don't equal, can't convert. From Rate:" + from + ", To Rate:" + to);
+        } else if (to.getRate() == 0) {
+            throw new InvalidExchangeRateException("To rate is zero. Can't convert.");
+        }
+        return from.getRate() / to.getRate();
     }
 
-    public BigDecimal toCurr2(BigDecimal curr1value) {
-        return curr1value.multiply(rate1).setScale(3, RoundingMode.CEILING);
+    /**
+     * Need to check currency to for exchange rate conversions
+     *
+     * @return curr2
+     */
+    public String getCurr2() {
+        return curr2;
+    }
+
+    /**
+     * Rates will be used to get conversions.
+     *
+     * @return converted rate.
+     */
+    public Double getRate() {
+        return rate;
     }
 
     @Override
     public String toString() {
-        return curr1 + "/" + curr2 + " : " + rate1;
+        return curr1 + "/" + curr2 + " : " + rate;
     }
-
-    public String printConversions() {
-        String s = this.toString();
-        s += "\n" + curr2 + "/" + curr1 + " : " + rate2;
-        return s;
-    }
-
 }

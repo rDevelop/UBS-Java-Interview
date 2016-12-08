@@ -125,4 +125,22 @@ public abstract class AbstractData implements Comparable {
     }
 
 
+    /**
+     * Return hashcode based on class values
+     *
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        int result = company != null ? company.hashCode() : 0;
+        result = 31 * result + (account != null ? account.hashCode() : 0);
+        result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (country != null ? country.hashCode() : 0);
+        result = 31 * result + (creditRating != null ? creditRating.hashCode() : 0);
+        result = 31 * result + (currency != null ? currency.hashCode() : 0);
+        result = 31 * result + (amount != null ? amount.hashCode() : 0);
+        result = 31 * result + (average != null ? average.hashCode() : 0);
+        result = 31 * result + count;
+        return result;
+    }
 }

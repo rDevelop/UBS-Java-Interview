@@ -4,11 +4,11 @@ import data.Data;
 import loader.DataLoader;
 import marketdata.ExchangeRate;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 /**
  * App is the main class of the UBS Java Interview exercise. The exercise is given to candidates
@@ -18,6 +18,14 @@ import java.util.TreeMap;
  * correct answers, only that the program should satisfy the conditions in <tt>requirements.txt</tt>
  */
 public class App {
+    static final Logger logger = Logger.getLogger(App.class.getName());
+
+    /**
+     * No public constructor for App.
+     */
+    private App() {
+    }
+
     /**
      * This main method executes the {@link DataLoader#load(Map, List)}<br>
      * There are two implementations with {@link TreeMap}  and {@link HashMap} .<br>
@@ -39,26 +47,34 @@ public class App {
         String file = "src/test/resources/FILE.DAT";
         if (args.length > 0) {
             file = args[0];
-            System.out.println("File parameter: " + file);
+            logger.info("File parameter: " + file);
         }
         DataLoader loader = new DataLoader();
 
-        loader.addExchangeRate("GBP", new ExchangeRate("GBP", "USD", BigDecimal.valueOf(1.654)));
-        loader.addExchangeRate("EUR", new ExchangeRate("EUR", "USD", BigDecimal.valueOf(1.35)));
-        loader.addExchangeRate("CHF", new ExchangeRate("CHF", "USD", BigDecimal.valueOf(1.10)));
+        loader.addExchangeRate("GBP/USD", new ExchangeRate("GBP", "USD", 1.245));
+        loader.addExchangeRate("CHF/USD", new ExchangeRate("CHF", "USD", .99));
+        loader.addExchangeRate("EUR/USD", new ExchangeRate("EUR", "USD", 1.1));
 
-        System.out.println("HashMap...");
         Map<String, Data> map = loader.load(new HashMap<>(), loader.readFileAsString(file));
-        System.out.println("Country     \tCredit Rating\tAverage");
-        System.out.println("_________________________________________________________");
-        map.forEach((s, data) -> System.out.println(data));
+        if (!map.isEmpty()) {
+            System.out.println("HashMap ...");
+            System.out.println("Country     \tCredit Rating\tAverage");
+            System.out.println("_________________________________________________________");
+            map.forEach((s, data) -> System.out.println(data));
+        } else {
+            System.err.println("No ouput for HashMap.");
+        }
 
         System.out.println("\n");
 
-        System.out.println("TreeMap..");
-        System.out.println("Country     \tCredit Rating\tAverage");
-        System.out.println("_________________________________________________________");
         map = loader.load(new TreeMap<>(), loader.readFileAsString(file));
-        map.forEach((s, data) -> System.out.println(data));
+        if (!map.isEmpty()) {
+            System.out.println("TreeMap (Sorted)..");
+            System.out.println("Country     \tCredit Rating\tAverage");
+            System.out.println("_________________________________________________________");
+            map.forEach((s, data) -> System.out.println(data));
+        } else {
+            System.err.println("No ouput for TreeMap.");
+        }
     }
 }
